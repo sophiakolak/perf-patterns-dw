@@ -13,7 +13,7 @@ mydb = mysql.connector.connect(
 )
 mycursor = mydb.cursor(buffered=True)
 
-query = 'SELECT id,array_key,runtime FROM samples'
+'''query = 'SELECT id,array_key,runtime FROM samples'
 mycursor.execute(query)
 result = mycursor.fetchall()
 
@@ -32,4 +32,17 @@ for x in result:
         id_dic[ak+rt] = 1
 
 print(ids)
-print(len(ids))
+print(len(ids))'''
+
+from sklearn import svm
+X = [[0, 0], [1, 1]]
+y = [0, 1]
+clf = svm.SVC()
+clf.fit(X, y)
+
+yeye = [2,2]
+yuh = []
+yuh.append(yeye)
+print(type(yuh))
+print(clf.predict(yuh))
+

@@ -17,7 +17,9 @@ from mpl_toolkits import mplot3d
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
 from sklearn.cluster import DBSCAN
+from sklearn import svm
 
 mydb = mysql.connector.connect(
         host="localhost",
@@ -27,7 +29,8 @@ mydb = mysql.connector.connect(
 )
 mycursor = mydb.cursor(buffered=True)
 upper_lower_dic = {}
-f = open('outlier_stats.txt', 'w')
+X = np.array([])
+y = np.array([])
 
 def get_samples(prob_key):
     query = 'SELECT id, deepwalk, is_high_perf FROM samples WHERE array_key="'+prob_key+'"'
@@ -53,12 +56,13 @@ def select_problems():
     query = 'SELECT DISTINCT array_key FROM samples'
     mycursor.execute(query)
     result = mycursor.fetchall()
+    #for x in result:
+    #    prob_key = str(x[0])
+    #    upper_lower_dic[prob_key] = get_upper_lower(prob_key)
     for x in result:
         prob_key = str(x[0])
-        upper_lower_dic[prob_key] = get_upper_lower(prob_key)
-    for x in result:
-        prob_key = str(x[0])
-        visualize_samples(prob_key)
+        #visualize_samples(prob_key)
+        predict_samples(prob_key)
 
 def calc_upper_lower(list):
     sorted(list)
@@ -157,5 +161,25 @@ def visualize_samples(prob_key):
                 index += 1
     plt.savefig(prob_key+".png")
 
+def predict_samples(prob_key):
+    result = get_samples(prob_key)
+    for code_tup in result:
+        id = str(code_tup[0])
+        dw = code_tup[1]
+        is_high_perf = int(code_tup[2])
+        if dw is not None:
+            X = parse_data(dw)
+            for vec in X:
+                np.append(X, vec)
+                np.append(y, is_high_perf)
 
 select_problems()
+#data_tuples = list(zip(X, y))
+#df = pd.DataFrame(data_tuples)
+#print(df.head())
+#X_train, X_test, y_train, y_test = train_test_split(df, y, test_size=0.2)
+#clf = svm.SVC()
+#clf.fit(X_train, y_train)
+#result = clf.predict(X_test)
+print(result)
+print(y_test)
